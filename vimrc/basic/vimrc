@@ -1,0 +1,217 @@
+"bai.dexiu
+"语法高亮，去除后仍生效？可能有插件起到了高亮的作用
+"syntax enable
+syntax on
+colorscheme desert
+"使用vim的键盘模式
+set nocompatible
+set autoindent
+"高亮查找匹配
+set hlsearch
+""""""""""""""""
+"""set code
+set fileencodings=utf-8,gb2312,gb18030,gbk,ucs-bom,cp936,latin1
+set enc=utf8
+set fencs=utf8,gbk,gb2312,gb18030
+""""""""""""""""""""""""
+"显示行号
+set number
+set cindent
+"检测文件的类型
+filetype on
+"设置快捷键
+let mapleader=';'
+
+" plug.vim 插件管理
+call  plug#begin('~/.vim/vim-plug') "将下面的插件安装到vim-plug目录下
+" gtags start
+" 这里的skywind3000/gutentags_plus指的是github上源码路径，即github.com/后的部分
+Plug 'ludovicchabant/vim-gutentags'	"自动生成tags插件
+Plug 'skywind3000/gutentags_plus'
+Plug 'skywind3000/vim-preview'
+Plug 'godlygeek/tabular'
+" Plug 'vim-scripts/TagHighlight'
+" PLug 'plasticboy/vim-markdown'
+
+" enable gtags module
+let g:gutentags_modules = ['ctags', 'gtags_cscope']
+
+" config project root markers.
+let g:gutentags_project_root = ['.root', '.svn', '.git', '.hg', '.project']
+
+" 所生成的数据文件的名称
+let g:gutentags_ctags_tagfile = '.tags'
+
+" 同时开启 ctags 和 gtags 支持：
+let g:gutentags_modules = []
+if executable('ctags')
+	let g:gutentags_modules += ['ctags']
+endif
+if executable('gtags-cscope') && executable('gtags')
+	let g:gutentags_modules += ['gtags_cscope']
+endif
+
+" generate datebases in my cache directory, prevent gtags files polluting my project
+
+" 将自动生成的 tags 文件全部放入 ~/.cache/tags 目录中，避免污染工程目录
+let s:vim_tags = expand('~/.cache/tags')
+let g:gutentags_cache_dir = s:vim_tags
+
+" forbid gutentags adding gtags databases
+let g:gutentags_auto_add_gtags_cscope = 0
+
+" 配置 ctags 的参数
+let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extra=+q']
+let g:gutentags_ctags_extra_args += ['--c++-kinds=+px']
+let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
+setlocal tags+=... 
+
+" 检测 ~/.cache/tags 不存在就新建
+if !isdirectory(s:vim_tags)
+   silent! call mkdir(s:vim_tags, 'p')
+endif
+
+" gtags end
+" 
+" tagbar start
+"安装tagbar插件    
+"Plug 'majutsushi/tagbar'
+"设置tagbar使用的ctags的插件,必须要设置对    
+"let g:tagbar_ctags_bin='/usr/bin/ctags'    
+"设置tagbar的窗口宽度    
+"let g:tagbar_width=30    
+"设置tagbar的窗口显示的位置,为左边    
+"let g:tagbar_right=1    
+"打开文件自动 打开tagbar    
+"autocmd BufReadPost *.cpp,*.c,*.h,*.hpp,*.cc,*.cxx call tagbar#autoopen()    
+"映射tagbar的快捷键    
+"map <F8> :TagbarToggle<CR>    
+"map <C-c> :TagbarToggle<CR>  
+"
+" tagbar end
+"  LeaderF Start tagbar的替代品
+Plug 'Yggdroot/LeaderF'
+let g:Lf_ShortcutF = '<c-p>'
+let g:Lf_ShortcutB = '<m-n>'
+" 显示最近使用的文件
+noremap <c-n> :LeaderfMru<cr>
+"显示函数列表
+noremap <m-p> :LeaderfFunction!<cr>
+noremap <m-n> :LeaderfBuffer<cr>
+noremap <m-m> :LeaderfTag<cr>
+let g:Lf_StlSeparator = { 'left': '', 'right': '', 'font': '' }
+
+let g:Lf_RootMarkers = ['.project', '.root', '.svn', '.git']
+let g:Lf_WorkingDirectoryMode = 'Ac'
+let g:Lf_WindowHeight = 0.30
+let g:Lf_CacheDirectory = expand('~/.vim/cache')
+let g:Lf_ShowRelativePath = 0
+let g:Lf_HideHelp = 1
+let g:Lf_StlColorscheme = 'powerline'
+let g:Lf_PreviewResult = {'Function':0, 'BufTag':0}
+"  LeaderF End
+call plug#end()
+" 显示tab
+autocmd FileType make set noexpandtab
+
+" test
+" noremap <ESC>x :echo "ALT-X pressed"<cr>
+noremap <M-x> :echo "ALT-X pressed"<cr>
+
+" YouCompleteMe
+set runtimepath+=~/.vim/bundle/YouCompleteMe
+let g:ycm_collect_identifiers_from_tags_files = 1           " 开启 YCM 基于标签引擎
+let g:ycm_collect_identifiers_from_comments_and_strings = 1 " 注释与字符串中的内容也用于补全
+let g:syntastic_ignore_files=[".*\.py$"]
+let g:ycm_seed_identifiers_with_syntax = 1                  " 语法关键字补全
+let g:ycm_complete_in_comments = 1
+let g:ycm_confirm_extra_conf = 0
+let g:ycm_key_list_select_completion = ['<c-n>', '<Down>']  " 映射按键, 没有这个会拦截掉tab, 导致其他插件的tab不能用.
+let g:ycm_key_list_previous_completion = ['<c-p>', '<Up>']
+let g:ycm_complete_in_comments = 1                          " 在注释输入中也能补全
+let g:ycm_complete_in_strings = 1                           " 在字符串输入中也能补全
+let g:ycm_collect_identifiers_from_comments_and_strings = 1 " 注释和字符串中的文字也会被收入补全
+let g:ycm_global_ycm_extra_conf='~/.vim/bundle/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_conf.py'
+let g:ycm_show_diagnostics_ui = 0                           " 禁用语法检查
+inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<CR>" |            " 回车即选中当前项
+nnoremap <c-j> :YcmCompleter GoToDefinitionElseDeclaration<CR>|     " 跳转到定义处
+"let g:ycm_min_num_of_chars_for_completion=2                 " 从第2个键入字符就开始罗列匹配项
+
+" Uncomment the following to have Vim jump to the last position when
+" reopening a file
+" 自动跳转到上次退出文件的位置
+if has("autocmd")
+  au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+endif
+
+" PreView keymap
+" doc:https://github.com/skywind3000/vim-preview
+" 在quickFix中按p，在右侧窗口打开预览
+autocmd FileType qf nnoremap <silent><buffer> p :PreviewQuickfix<cr>
+" 在quickFix中按P，关闭打开的预览
+autocmd FileType qf nnoremap <silent><buffer> P :PreviewClose<cr>
+
+" gtags_cscope的key map
+" doc:https://github.com/skywind3000/gutentags_plus
+" keymap	desc
+" <leader>ss	Find symbol (reference) under cursor 查看光标下符号的引用
+" <leader>sg	Find symbol definition under cursor 查看光标下符号的定义
+" <leader>sd	Functions called by this function
+" <leader>sc	Functions calling this function 查看有哪些函数调用该函数
+" <leader>st	Find text string under cursor 在当前工程下查找某个字符，类似于grep -nrs panxd *
+" <leader>se	Find egrep pattern under cursor
+" <leader>sf	Find file name under cursor 查找光标下的文件
+" <leader>si	Find files #including the file name under cursor  查找了哪些文件 include 了该文件
+" <leader>sa	Find places where current symbol is assigned
+"
+noremap <silent> <leader>ss :GscopeFind s <C-R><C-W><cr>
+noremap <silent> <leader>sg :GscopeFind g <C-R><C-W><cr>
+noremap <silent> <leader>sc :GscopeFind c <C-R><C-W><cr>
+noremap <silent> <leader>st :GscopeFind t <C-R><C-W><cr>
+noremap <silent> <leader>se :GscopeFind e <C-R><C-W><cr>
+noremap <silent> <leader>sf :GscopeFind f <C-R>=expand("<cfile>")<cr><cr>
+noremap <silent> <leader>si :GscopeFind i <C-R>=expand("<cfile>")<cr><cr>
+noremap <silent> <leader>sd :GscopeFind d <C-R><C-W><cr>
+noremap <silent> <leader>sa :GscopeFind a <C-R><C-W><cr>
+
+function! Terminal_MetaMode(mode)
+   	set ttimeout
+	if $TMUX != ''
+		set ttimeoutlen=30
+	elseif &ttimeoutlen > 80 || &ttimeoutlen <= 0
+		set ttimeoutlen=80
+	endif
+	if has('nvim') || has('gui_running')
+	    return
+	endif
+	function! s:metacode(mode, key)
+		if a:mode == 0
+			exec "set <M-".a:key.">=\e".a:key
+		else
+			exec "set <M-".a:key.">=\e]{0}".a:key."~"
+		endif
+	endfunc
+	for i in range(10)
+		call s:metacode(a:mode, nr2char(char2nr('0') + i))
+	endfor
+	for i in range(26)
+		call s:metacode(a:mode, nr2char(char2nr('a') + i))
+		call s:metacode(a:mode, nr2char(char2nr('A') + i))
+	endfor
+	if a:mode != 0
+		for c in [',', '.', '/', ';', '[', ']', '{', '}']
+			call s:metacode(a:mode, c)
+		endfor
+		for c in ['?', ':', '-', '_']
+			call s:metacode(a:mode, c)
+		endfor
+	else
+		for c in [',', '.', '/', ';', '{', '}']
+			call s:metacode(a:mode, c)
+		endfor
+		for c in ['?', ':', '-', '_']
+			call s:metacode(a:mode, c)
+		endfor
+	endif
+endfunc
+call Terminal_MetaMode(0)
